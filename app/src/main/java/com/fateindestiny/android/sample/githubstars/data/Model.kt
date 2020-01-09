@@ -9,10 +9,12 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class Model(private val presenter: GitHubConstants.Presenter) {
+    private var cache:Call<SearchResultDTO>? = null
+
     fun serchUser(userName: String) {
 
-        APIManager.service().searchUsers(userName).enqueue(
-            object : Callback<SearchResultDTO> {
+        cache = APIManager.service().searchUsers(userName).apply {
+            enqueue(object : Callback<SearchResultDTO> {
                 override fun onFailure(call: Call<SearchResultDTO>, t: Throwable) {
                     Log.d("FID", "test :: onFailure")
                 }
@@ -20,7 +22,18 @@ class Model(private val presenter: GitHubConstants.Presenter) {
                 override fun onResponse( call: Call<SearchResultDTO>, response: Response<SearchResultDTO> ) {
                     response.body()?.let { presenter.searchResult(it.items) }
                 }
-            }
-        )
+            })
+        }
+//        APIManager.service().searchUsers(userName).enqueue(
+//            object : Callback<SearchResultDTO> {
+//                override fun onFailure(call: Call<SearchResultDTO>, t: Throwable) {
+//                    Log.d("FID", "test :: onFailure")
+//                }
+//
+//                override fun onResponse( call: Call<SearchResultDTO>, response: Response<SearchResultDTO> ) {
+//                    response.body()?.let { presenter.searchResult(it.items) }
+//                }
+//            }
+//        )
     }
 } // end of class Model

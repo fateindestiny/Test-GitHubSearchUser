@@ -3,10 +3,10 @@ package com.fateindestiny.android.sample.githubstars
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fateindestiny.android.sample.githubstars.data.UserVO
 import com.fateindestiny.android.sample.githubstars.view.adapter.ListRecyclerViewAdapter
@@ -21,11 +21,29 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_main)
 
+        rvUserList.addItemDecoration(
+            DividerItemDecoration(
+                this@MainActivity,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
         rvUserList.layoutManager = LinearLayoutManager(this@MainActivity)
 
         presenter = MainPresenter(this)
 
-        etUserName.addTextChangedListener( object : TextWatcher {
+        etUserName.setOnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_SEARCH -> {
+                    presenter.searchUser(v.text.toString())
+                }
+                else ->
+                    presenter.searchUser(v.text.toString())
+            }
+            true
+        }
+
+        etUserName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
             }
@@ -35,26 +53,23 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                when(count) {
-                    0-> {
+                when (count) {
+                    0 -> {
                         rvUserList.visibility = View.INVISIBLE
                     }
                     else -> {
-                        if(s != null) {
+                        if (s != null) {
                             presenter.searchUser(s.toString())
                         }
                     }
                 }
             }
         })
-
-
-//        presenter.searchUser("fateindestiny")
     }
 
     override fun showUserList(list: List<UserVO>) {
         rvUserList.adapter = userListAdapter?.apply {
             this.userList = list
-        } ?: ListRecyclerViewAdapter(list)
+        } ?: ListRecyclerViewAdapter(resources, list)
     }
 } // end of class MainActivity

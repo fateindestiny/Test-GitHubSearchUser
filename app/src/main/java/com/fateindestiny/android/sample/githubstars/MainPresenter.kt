@@ -13,7 +13,9 @@ class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Pr
      * @param userName 검색할 사용자 이름.
      */
     override fun searchUser(userName: String) {
-        model.serchUser(userName)
+        if(userName.isNotEmpty()) {
+            model.serchUser(userName)
+        }
     }
 
     /**
