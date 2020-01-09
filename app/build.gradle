@@ -24,7 +24,12 @@ android {
 }
 
 dependencies {
+    /**
+     * implementation 된 라이브러리 목록
+     * 1. TagDBFactory : SQLite 사용을 위한 라이브러리.
+     */
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     // Kotlin
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
@@ -44,6 +49,7 @@ dependencies {
     // Layout Library
     implementation "com.android.support.constraint:constraint-layout:$constraint_version"
     implementation "com.android.support:recyclerview-v7:$recyclerview_version"
+    implementation 'com.google.android.material:material:1.0.0'
 
     // Image Loader Library
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'

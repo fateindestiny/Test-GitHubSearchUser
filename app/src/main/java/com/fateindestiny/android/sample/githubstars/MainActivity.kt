@@ -12,7 +12,7 @@ import com.fateindestiny.android.sample.githubstars.data.UserVO
 import com.fateindestiny.android.sample.githubstars.view.adapter.ListRecyclerViewAdapter
 import kotlinx.android.synthetic.main.act_main.*
 
-class MainActivity : AppCompatActivity(), GitHubConstants.View {
+class MainActivity : AppCompatActivity(), GitHubConstants.View, ListRecyclerViewAdapter.OnEventListener{
     private lateinit var presenter: GitHubConstants.Presenter
 
     private var userListAdapter: ListRecyclerViewAdapter? = null
@@ -70,6 +70,12 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View {
     override fun showUserList(list: List<UserVO>) {
         rvUserList.adapter = userListAdapter?.apply {
             this.userList = list
-        } ?: ListRecyclerViewAdapter(resources, list)
+        } ?: ListRecyclerViewAdapter(resources, list).apply { this.favoritListener = this@MainActivity }
+    }
+
+    override fun OnFavoritChanged(user: UserVO, isFavorit: Boolean) {
+        if(isFavorit) {
+            presenter.addFavoritUser(user)
+        }
     }
 } // end of class MainActivity

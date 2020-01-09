@@ -26,4 +26,22 @@ class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Pr
     override fun searchResult(list: List<UserVO>) {
         view.showUserList(list)
     }
+
+    /**
+     * 유저 즐겨찾기 추가 함수.
+     *
+     * @param user 유저 정보 [UserVO]
+     */
+    override fun addFavoritUser(user: UserVO) {
+        model.addFavoritUser(user)
+    }
+
+    /**
+     * 유저 즐겨찾기 삭제 함수.
+     *
+     * @param user 유저 정보 [UserVO]
+     */
+    override fun removeFavoritUser(user: UserVO) {
+        model.removeFavoritUser(user)
+    }
 } // end of class MainPresenter

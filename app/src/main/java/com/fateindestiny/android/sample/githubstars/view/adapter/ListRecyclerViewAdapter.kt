@@ -4,6 +4,8 @@ import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -15,12 +17,17 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer
 import kotlinx.android.synthetic.main.item_user_list.view.*
 
 class ListRecyclerViewAdapter(res:Resources, var userList: List<UserVO>) :
-    RecyclerView.Adapter<ListRecyclerViewAdapter.ViewHolder>() {
+    RecyclerView.Adapter<ListRecyclerViewAdapter.ViewHolder>(), CompoundButton.OnCheckedChangeListener {
 
     private val imageLoaderOption = DisplayImageOptions.Builder()
         .displayer(RoundedBitmapDisplayer(res.getDimensionPixelSize(R.dimen.avatar_size)))
         .build()
 
+    var favoritListener:OnEventListener? = null
+
+    interface OnEventListener {
+        fun OnFavoritChanged(user:UserVO, isFavorit:Boolean)
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
         LayoutInflater.from(parent.context).inflate(
             R.layout.item_user_list,
@@ -28,7 +35,6 @@ class ListRecyclerViewAdapter(res:Resources, var userList: List<UserVO>) :
             false
         )
     )
-
 
     override fun getItemCount(): Int = userList.size
 
@@ -38,11 +44,22 @@ class ListRecyclerViewAdapter(res:Resources, var userList: List<UserVO>) :
             holder.ivAvatar.setImageBitmap(null)
             ImageLoader.getInstance().displayImage(it.avatarUrl, holder.ivAvatar, imageLoaderOption)
             holder.txtUserName.text = it.login
+            holder.chkFavorit.tag = it
+        }
+
+        holder.chkFavorit.setOnCheckedChangeListener(this)
+    }
+
+    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+        val user = buttonView?.tag ?: return
+        if(user is UserVO) {
+            favoritListener?.OnFavoritChanged(user, isChecked)
         }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivAvatar: ImageView = view.ivAvatar
         val txtUserName: TextView = view.txtUserName
+        val chkFavorit:CheckBox  = view.chkFavorit
     } // end of class ViewHolder
 } // end of class ListRecyclerViewAdapter

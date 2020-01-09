@@ -26,5 +26,19 @@ interface GitHubConstants {
          * @param list 검색 결과 [UserVO] 리스트.
          */
         fun searchResult(list:List<UserVO>)
-    } // end of interface Preseneter
+
+        /**
+         * 유저 즐겨찾기 추가 함수.
+         *
+         * @param user 유저 정보 [UserVO]
+         */
+        fun addFavoritUser(user:UserVO)
+
+        /**
+         * 유저 즐겨찾기 삭제 함수.
+         *
+         * @param user 유저 정보 [UserVO]
+         */
+        fun removeFavoritUser(user:UserVO)
+    } // end of interface Presenter
 } // end of interface GitHubConstants

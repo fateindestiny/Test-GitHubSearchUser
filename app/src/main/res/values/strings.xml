@@ -2,4 +2,8 @@
     <string name="app_name">GitHubStars</string>
 
     <string name="hint_input_user_name">검색할 사용자 이름을 입력해주세요.</string>
+
+    <string name="api">API</string>
+    <string name="local">Local</string>
+
 </resources>
