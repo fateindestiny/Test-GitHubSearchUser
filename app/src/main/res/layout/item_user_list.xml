@@ -6,6 +6,7 @@
     android:gravity="center_vertical"
     android:paddingBottom="20dp">
 
+    <!--초성 표시 영역-->
     <TextView
         android:id="@+id/txtInitialChar"
         android:layout_width="match_parent"
@@ -19,6 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 사용자 아이콘 -->
     <ImageView
         android:id="@+id/ivAvatar"
         android:layout_width="@dimen/avatar_size"
@@ -31,6 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtInitialChar" />
 
+    <!-- 사용자 이름 -->
     <TextView
         android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
@@ -41,6 +44,7 @@
         app:layout_constraintStart_toEndOf="@id/ivAvatar"
         app:layout_constraintTop_toBottomOf="@id/txtInitialChar" />
 
+    <!-- 즐겨 찾기 여부 아이콘 -->
     <ImageView
         android:id="@+id/ivFavorit"
         android:layout_width="50dp"

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- 검색 입력 영역 -->
     <EditText
         android:id="@+id/etUserName"
         android:layout_width="match_parent"
@@ -16,6 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread_inside" />
 
+    <!-- API / Local Tab 영역 -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
@@ -26,17 +28,20 @@
         app:layout_constraintTop_toBottomOf="@id/etUserName"
         app:layout_constraintVertical_chainStyle="spread_inside">
 
+        <!-- API -->
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/api" />
 
+        <!-- Local -->
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/local" />
     </com.google.android.material.tabs.TabLayout>
 
+    <!-- API / Local에 따라 목록 View를 전환하기 위한 컨테이너 View -->
     <FrameLayout
         android:id="@+id/flUserListContainer"
         android:layout_width="match_parent"
@@ -47,11 +52,13 @@
         app:layout_constraintTop_toBottomOf="@id/tabs"
         app:layout_constraintVertical_chainStyle="spread_inside">
 
+        <!-- API 조회 목록 List -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvUserList1"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <!-- Local 조회 목록 List -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvUserList2"
             android:layout_width="match_parent"

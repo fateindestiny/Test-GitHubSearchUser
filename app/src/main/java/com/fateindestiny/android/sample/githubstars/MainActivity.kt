@@ -2,9 +2,9 @@ package com.fateindestiny.android.sample.githubstars
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.HandlerThread
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
@@ -23,9 +23,10 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
     ListRecyclerViewAdapter.OnEventListener {
     private lateinit var presenter: GitHubConstants.Presenter
 
-    private var userListAdapter: ListRecyclerViewAdapter? = null
     private lateinit var currentUserList: RecyclerView
 
+    private val handlerThread = HandlerThread("api-req-thread").apply { start() }
+    private val backHandler = Handler(handlerThread.looper)
     private val uiHandler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +37,24 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
             DividerItemDecoration(this@MainActivity, DividerItemDecoration.VERTICAL)
         )
         rvUserList1.layoutManager = LinearLayoutManager(this@MainActivity)
+        rvUserList1.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager
+                if (layoutManager is LinearLayoutManager) {
+                    val lastItemPosition = layoutManager.findLastCompletelyVisibleItemPosition()
+                    val itemTotalCnt = recyclerView.adapter?.itemCount ?: 0
+                    if (lastItemPosition == itemTotalCnt - 1) {
+                        // 마지막까지 스크롤 한 상태
+                        presenter.searchMore()
+                    }
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        })
 
         rvUserList2.addItemDecoration(
             DividerItemDecoration(this@MainActivity, DividerItemDecoration.VERTICAL)
@@ -69,7 +88,15 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s != null) {
-                    presenter.searchUser(s.toString())
+                    // 기존 검색 요청한 것을 삭제.
+                    backHandler.removeCallbacksAndMessages(null)
+                    /**
+                     * 1초의 딜레이를 주는 것은 검색을 위해 타이핑 치는 시간의 여유를 주어
+                     * 너무 자주 API 요청을 보내지 않도록 하기 위함.
+                     */
+                    backHandler.postDelayed({
+                        presenter.searchUser(s.toString())
+                    }, 1000)
                 }
             }
         })
@@ -126,6 +153,16 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
         }
     }
 
+    override fun addUserList(list: ArrayList<UserVO>) {
+        val adapter = rvUserList1.adapter
+        if (adapter is ListRecyclerViewAdapter) {
+            adapter.userList.addAll(list)
+            uiHandler.post {
+                rvUserList1.adapter?.notifyDataSetChanged()
+            }
+        }
+    }
+
     /**
      * User 목록 View의 데이터 중 파라메터 데이터와 일치하는 것에 정보를 갱신하는 함수.
      *
@@ -153,8 +190,8 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
         }
     }
 
+
     override fun onFavoritChanged(user: UserVO, isFavorit: Boolean) {
-        Log.d("FID", "test :: onfavoritchagned")
         if (isFavorit) {
             presenter.addFavoritUser(user)
         } else {

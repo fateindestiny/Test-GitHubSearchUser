@@ -7,5 +7,5 @@ import retrofit2.http.Query
 interface APIService {
 
     @GET("/search/users")
-    fun searchUsers(@Query("q") userName: String): Call<SearchResultDTO>
+    fun searchUsers(@Query("q") userName: String, @Query("page") page: Int = 1): Call<SearchResultDTO>
 }

@@ -1,7 +1,6 @@
 package com.fateindestiny.android.sample.githubstars.view.adapter
 
 import android.content.res.Resources
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,7 +60,6 @@ class ListRecyclerViewAdapter(res: Resources, var userList: ArrayList<UserVO>) :
     }
 
     override fun onClick(v: View?) {
-        Log.d("FID", "test :: item click :: tag=${v?.tag}")
         val user = v?.tag ?: return
         if (user is UserVO) {
             favoritListener?.onFavoritChanged(user, !user.isFavorit)

@@ -1,5 +1,7 @@
 package com.fateindestiny.android.sample.githubstars.presenter
 
+import android.os.Handler
+import android.os.HandlerThread
 import com.fateindestiny.android.sample.githubstars.data.Model
 import com.fateindestiny.android.sample.githubstars.data.UserVO
 
@@ -33,6 +35,10 @@ class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Pr
         }
     }
 
+    override fun searchMore() {
+        model.searchMoreByAPI()
+    }
+
     /**
      * 검색된 결과 데이터를 View에 표시하도록 호출.
      *
@@ -40,6 +46,16 @@ class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Pr
      */
     override fun searchResult(list: ArrayList<UserVO>) {
         view.showUserList(list)
+    }
+
+    /**
+     * 추가 검색 결과 콜백 함수.
+     * API 검색 리스트에 아이템을 추가하도록 처리.
+     *
+     * @param list 검색 결과 [UserVO] 리스트.
+     */
+    override fun searchMoreResult(list: ArrayList<UserVO>) {
+        view.addUserList(list)
     }
 
     /**
