@@ -1,8 +1,10 @@
 package com.fateindestiny.android.sample.githubstars
 
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +25,8 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
 
     private var userListAdapter: ListRecyclerViewAdapter? = null
     private lateinit var currentUserList: RecyclerView
+
+    private val uiHandler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,10 +116,13 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
     }
 
     override fun showUserList(list: ArrayList<UserVO>) {
-        currentUserList.adapter = userListAdapter?.apply {
-            this.userList = list
-        } ?: ListRecyclerViewAdapter(resources, list).apply {
-            this.favoritListener = this@MainActivity
+        val adapter = currentUserList.adapter
+        if (adapter == null) {
+            currentUserList.adapter = ListRecyclerViewAdapter(resources, list).apply {
+                favoritListener = this@MainActivity
+            }
+        } else if (adapter is ListRecyclerViewAdapter) {
+            adapter.userList = list
         }
     }
 
@@ -129,6 +136,9 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
 
         if (adapter is ListRecyclerViewAdapter) {
             adapter.updateUserItem(user)
+            uiHandler.post {
+                rvUserList1.adapter?.notifyDataSetChanged()
+            }
         }
         adapter = rvUserList2.adapter
         if (adapter is ListRecyclerViewAdapter) {
@@ -143,7 +153,8 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
         }
     }
 
-    override fun OnFavoritChanged(user: UserVO, isFavorit: Boolean) {
+    override fun onFavoritChanged(user: UserVO, isFavorit: Boolean) {
+        Log.d("FID", "test :: onfavoritchagned")
         if (isFavorit) {
             presenter.addFavoritUser(user)
         } else {

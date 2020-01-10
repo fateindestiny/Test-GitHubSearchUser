@@ -2,6 +2,7 @@ package com.fateindestiny.android.sample.githubstars.data.local
 
 import android.database.Cursor
 import com.fateindestiny.android.sample.githubstars.data.UserVO
+import com.fateindestiny.android.sample.githubstars.util.Util
 import com.fateindestiny.tagdbfactory.TagDBFactory
 import java.sql.SQLException
 
@@ -17,7 +18,7 @@ object DBHelper : TagDBFactory() {
                 DBInfo.TBL_FAVORIT_USER.NAME, null,
                 // userName이 없으면 모든 조건 없이, userName이 있으면 해당 이름 값으로 조회.
                 if (userName.isEmpty()) null else "${DBInfo.TBL_FAVORIT_USER.LOGIN} like %$userName%",
-                null, null, null, null
+                null, null, null, "${DBInfo.TBL_FAVORIT_USER.LOGIN} ASC"
             )
             if (cursor.moveToFirst()) {
                 do {
@@ -25,7 +26,10 @@ object DBHelper : TagDBFactory() {
                         UserVO(
                             getStringByColumnName(cursor, DBInfo.TBL_FAVORIT_USER.LOGIN),
                             getStringByColumnName(cursor, DBInfo.TBL_FAVORIT_USER.AVATAR_URL)
-                        ).apply { isFavorit = true }
+                        ).apply {
+                            isFavorit = true
+                            initialChars = Util.getInitialChar(login)
+                        }
                     )
                 } while (cursor.moveToNext())
             }

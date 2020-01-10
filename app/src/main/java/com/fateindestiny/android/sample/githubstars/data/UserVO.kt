@@ -8,6 +8,9 @@ data class UserVO(
     @SerializedName("login") val login: String,
     @SerializedName("avatar_url") val avatarUrl: String
 ) {
+
+    var initialChars:String? = null
+
     var isFavorit: Boolean = false
 
     fun getContentValues(): ContentValues = ContentValues().apply {
@@ -16,6 +19,6 @@ data class UserVO(
     }
 
     override fun equals(other: Any?): Boolean =
-        other is UserVO && other.login.equals(login)
+        other is UserVO && other.login == login && other.avatarUrl == avatarUrl
 
 } // end of class UserVO

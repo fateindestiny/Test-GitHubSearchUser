@@ -5,9 +5,12 @@ import com.fateindestiny.android.sample.githubstars.presenter.GitHubConstants
 import com.fateindestiny.android.sample.githubstars.data.local.DBHelper
 import com.fateindestiny.android.sample.githubstars.data.remote.APIManager
 import com.fateindestiny.android.sample.githubstars.data.remote.SearchResultDTO
+import com.fateindestiny.android.sample.githubstars.util.Util
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Model(private val presenter: GitHubConstants.Presenter) {
     private var cache: Call<SearchResultDTO>? = null
@@ -30,12 +33,16 @@ class Model(private val presenter: GitHubConstants.Presenter) {
                     response: Response<SearchResultDTO>
                 ) {
                     response.body()?.let { it ->
-                        presenter.searchResult(it.items.apply {
-                            // 즐겨찾기 여부를 DB에서 조회하여 플래그값 처리.
-                            this.forEach {
-                                it.isFavorit = isFavoritUser(it)
-                            }
-                        })
+                        presenter.searchResult(
+                            ArrayList(it.items.sortedWith(compareBy({ it.login }))
+                                .apply {
+                                    // 즐겨찾기 여부를 DB에서 조회하여 플래그값 처리.
+                                    this.forEach {
+                                        it.isFavorit = isFavoritUser(it)
+                                        it.initialChars = Util.getInitialChar(it.login)
+                                    }
+                                })
+                        )
                     }
                 }
             })

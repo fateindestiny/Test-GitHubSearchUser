@@ -1,11 +1,10 @@
 package com.fateindestiny.android.sample.githubstars.view.adapter
 
 import android.content.res.Resources
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +17,7 @@ import kotlinx.android.synthetic.main.item_user_list.view.*
 
 class ListRecyclerViewAdapter(res: Resources, var userList: ArrayList<UserVO>) :
     RecyclerView.Adapter<ListRecyclerViewAdapter.ViewHolder>(),
-    CompoundButton.OnCheckedChangeListener {
+    View.OnClickListener {
 
     private val imageLoaderOption = DisplayImageOptions.Builder()
         .displayer(RoundedBitmapDisplayer(res.getDimensionPixelSize(R.dimen.avatar_size)))
@@ -27,7 +26,7 @@ class ListRecyclerViewAdapter(res: Resources, var userList: ArrayList<UserVO>) :
     var favoritListener: OnEventListener? = null
 
     interface OnEventListener {
-        fun OnFavoritChanged(user: UserVO, isFavorit: Boolean)
+        fun onFavoritChanged(user: UserVO, isFavorit: Boolean)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
@@ -41,24 +40,31 @@ class ListRecyclerViewAdapter(res: Resources, var userList: ArrayList<UserVO>) :
     override fun getItemCount(): Int = userList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        userList[position].let {
-            holder.run {
-                // 스크롤시 기존 이미지가 표시되어 오류와 같이 보이기 때문에 기존 이미지삭제.
-                ivAvatar.setImageBitmap(null)
-                ImageLoader.getInstance()
-                    .displayImage(it.avatarUrl, ivAvatar, imageLoaderOption)
-                txtUserName.text = it.login
-                chkFavorit.isChecked = it.isFavorit
-                chkFavorit.tag = it
-                chkFavorit.setOnCheckedChangeListener(this@ListRecyclerViewAdapter)
+        val item = userList[position]
+        holder.run {
+
+            if (position > 0 && item.initialChars == userList[position - 1].initialChars) {
+                txtInitialChar.visibility = View.GONE
+            } else {
+                txtInitialChar.text = item.initialChars
+                txtInitialChar.visibility = View.VISIBLE
             }
+            // 스크롤시 기존 이미지가 표시되어 오류와 같이 보이기 때문에 기존 이미지삭제.
+            ivAvatar.setImageBitmap(null)
+            ImageLoader.getInstance()
+                .displayImage(item.avatarUrl, ivAvatar, imageLoaderOption)
+            txtUserName.text = item.login
+            ivFavorit.isEnabled = item.isFavorit
+            itemView.tag = item
+            itemView.setOnClickListener(this@ListRecyclerViewAdapter)
         }
     }
 
-    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-        val user = buttonView?.tag ?: return
+    override fun onClick(v: View?) {
+        Log.d("FID", "test :: item click :: tag=${v?.tag}")
+        val user = v?.tag ?: return
         if (user is UserVO) {
-            favoritListener?.OnFavoritChanged(user, isChecked)
+            favoritListener?.onFavoritChanged(user, !user.isFavorit)
         }
     }
 
@@ -67,7 +73,6 @@ class ListRecyclerViewAdapter(res: Resources, var userList: ArrayList<UserVO>) :
         if (idx > -1) {
             userList[idx].isFavorit = user.isFavorit
         }
-        notifyDataSetChanged()
     }
 
     fun removeUserItem(user: UserVO) {
@@ -76,8 +81,9 @@ class ListRecyclerViewAdapter(res: Resources, var userList: ArrayList<UserVO>) :
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val txtInitialChar: TextView = view.txtInitialChar
         val ivAvatar: ImageView = view.ivAvatar
         val txtUserName: TextView = view.txtUserName
-        val chkFavorit: CheckBox = view.chkFavorit
+        val ivFavorit: ImageView = view.ivFavorit
     } // end of class ViewHolder
 } // end of class ListRecyclerViewAdapter
