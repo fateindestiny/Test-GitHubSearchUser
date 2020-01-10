@@ -3,34 +3,46 @@ package com.fateindestiny.android.sample.githubstars
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.fateindestiny.android.sample.githubstars.data.UserVO
+import com.fateindestiny.android.sample.githubstars.presenter.GitHubConstants
+import com.fateindestiny.android.sample.githubstars.presenter.MainPresenter
+import com.fateindestiny.android.sample.githubstars.presenter.Mode
 import com.fateindestiny.android.sample.githubstars.view.adapter.ListRecyclerViewAdapter
+import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.act_main.*
 
-class MainActivity : AppCompatActivity(), GitHubConstants.View, ListRecyclerViewAdapter.OnEventListener{
+class MainActivity : AppCompatActivity(), GitHubConstants.View,
+    ListRecyclerViewAdapter.OnEventListener {
     private lateinit var presenter: GitHubConstants.Presenter
 
     private var userListAdapter: ListRecyclerViewAdapter? = null
+    private lateinit var currentUserList: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_main)
 
-        rvUserList.addItemDecoration(
-            DividerItemDecoration(
-                this@MainActivity,
-                DividerItemDecoration.VERTICAL
-            )
+        rvUserList1.addItemDecoration(
+            DividerItemDecoration(this@MainActivity, DividerItemDecoration.VERTICAL)
         )
+        rvUserList1.layoutManager = LinearLayoutManager(this@MainActivity)
 
-        rvUserList.layoutManager = LinearLayoutManager(this@MainActivity)
+        rvUserList2.addItemDecoration(
+            DividerItemDecoration(this@MainActivity, DividerItemDecoration.VERTICAL)
+        )
+        rvUserList2.layoutManager = LinearLayoutManager(this@MainActivity)
+
+
 
         presenter = MainPresenter(this)
+        changeUserList(presenter.getCurrentMode())
 
         etUserName.setOnEditorActionListener { v, actionId, event ->
             when (actionId) {
@@ -53,28 +65,64 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View, ListRecyclerView
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                when (count) {
-                    0 -> {
-                        rvUserList.visibility = View.INVISIBLE
+                if (s != null) {
+                    presenter.searchUser(s.toString())
+                }
+            }
+        })
+
+        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                Log.d("FID", "test :: ${tab?.text}")
+                when (tab?.text) {
+                    getString(R.string.api) -> {
+                        // API 탭이 선택되었을 경우.
+                        presenter.changeMode(Mode.API)
                     }
-                    else -> {
-                        if (s != null) {
-                            presenter.searchUser(s.toString())
-                        }
+                    getString(R.string.local) -> {
+                        // Local 탭이 선택되었을 경우.
+                        presenter.changeMode(Mode.LOCAL)
                     }
                 }
+                changeUserList(presenter.getCurrentMode())
+                presenter.searchUser("")
             }
         })
     }
 
+    fun changeUserList(mode: Mode) {
+        when (mode) {
+            Mode.API -> {
+                rvUserList1.visibility = View.VISIBLE
+                rvUserList2.visibility = View.GONE
+                currentUserList = rvUserList1
+            }
+            Mode.LOCAL -> {
+                rvUserList1.visibility = View.GONE
+                rvUserList2.visibility = View.VISIBLE
+                currentUserList = rvUserList2
+            }
+        }
+    }
+
     override fun showUserList(list: List<UserVO>) {
-        rvUserList.adapter = userListAdapter?.apply {
+        currentUserList.adapter = userListAdapter?.apply {
             this.userList = list
-        } ?: ListRecyclerViewAdapter(resources, list).apply { this.favoritListener = this@MainActivity }
+        } ?: ListRecyclerViewAdapter(resources, list).apply {
+            this.favoritListener = this@MainActivity
+        }
     }
 
     override fun OnFavoritChanged(user: UserVO, isFavorit: Boolean) {
-        if(isFavorit) {
+        if (isFavorit) {
             presenter.addFavoritUser(user)
         }
     }

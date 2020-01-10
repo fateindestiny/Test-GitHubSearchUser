@@ -1,20 +1,80 @@
 package com.fateindestiny.android.sample.githubstars.data.local
 
+import android.database.Cursor
 import com.fateindestiny.android.sample.githubstars.data.UserVO
 import com.fateindestiny.tagdbfactory.TagDBFactory
 import java.sql.SQLException
 
 object DBHelper : TagDBFactory() {
 
-    private val dbInfo = DBInfo("favorit.db", 1)
+    private val dbInfo = DBInfo("/sdcard/Download/favorit.db", 1)
+    private val db by lazy { open(dbInfo) }
 
-    fun insertFavoritUser(user: UserVO, tableName: String) {
+    fun selectFavoritUser(userName: String): ArrayList<UserVO> {
+        val list: ArrayList<UserVO> = arrayListOf()
         try {
-            val db = open(dbInfo)
-            db.insert(tableName, null, user.getContentValues())
+            val cursor = db.query(
+                DBInfo.TBL_FAVORIT_USER.NAME, null,
+                // userName이 없으면 모든 조건 없이, userName이 있으면 해당 이름 값으로 조회.
+                if (userName.isEmpty()) null else "${DBInfo.TBL_FAVORIT_USER.LOGIN} like %$userName%",
+                null, null, null, null
+            )
+            if (cursor.moveToFirst()) {
+                do {
+                    list.add(
+                        UserVO(
+                            getStringByColumnName(cursor, DBInfo.TBL_FAVORIT_USER.LOGIN),
+                            getStringByColumnName(cursor, DBInfo.TBL_FAVORIT_USER.AVATAR_URL)
+                        ).apply { isFavorit = true }
+                    )
+                } while (cursor.moveToNext())
+            }
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+        return list
+    }
+
+    fun hasFavoritUser(userName: String): Boolean {
+        var result = false
+        try {
+            val cursor = db.query(
+                DBInfo.TBL_FAVORIT_USER.NAME, null,
+                "${DBInfo.TBL_FAVORIT_USER.LOGIN}=\"$userName\"",
+                null, null, null, null
+            )
+            result = cursor.count > 0
         } catch (e: SQLException) {
             e.printStackTrace()
         }
 
+        return result
     }
+
+    fun insertFavoritUser(user: UserVO) {
+        try {
+            db.insert(DBInfo.TBL_FAVORIT_USER.NAME, null, user.getContentValues())
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun deleteFaoritUser(user: UserVO) {
+        try {
+            db.delete(
+                DBInfo.TBL_FAVORIT_USER.NAME,
+                "${DBInfo.TBL_FAVORIT_USER.LOGIN}=${user.login}",
+                null
+            )
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun getStringByColumnName(cursor: Cursor, name: String): String =
+        when (val idx = cursor.getColumnIndex(name)) {
+            -1 -> ""
+            else -> cursor.getString(idx)
+        }
+
 } // end of class DBHelper

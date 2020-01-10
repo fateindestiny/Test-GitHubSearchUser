@@ -1,4 +1,4 @@
-package com.fateindestiny.android.sample.githubstars
+package com.fateindestiny.android.sample.githubstars.presenter
 
 import com.fateindestiny.android.sample.githubstars.data.UserVO
 
@@ -13,6 +13,35 @@ interface GitHubConstants {
     } // end of interface View
 
     interface Presenter {
+
+        /**
+         * 즐겨찾기 사용자 여부 조회 함수.
+         *
+         * @param user 조회할 사용자 [UserVO]
+         */
+//        fun isFavoritUser(user:UserVO)
+
+        /**
+         * 즐겨 찾기 사용자 여부 결과 함수.
+         *
+         * @param isFavorit 즐겨찾기 여부.
+         */
+//        fun resultIsFavoritUser(isFavorit:Boolean)
+
+
+        /**
+         * 현재 표시중인 모드를 조회하는 함수.
+         *
+         * @return 현재 상태의 [Mode] 값.
+         */
+        fun getCurrentMode() : Mode
+        /**
+         * 검색 및 유저 목록 표시 모드 변경 함수.
+         *
+         * @param mode API / Local 모드 값.
+         */
+        fun changeMode(mode:Mode)
+
         /**
          * GitHub 유저 검색 함수.
          *

@@ -1,9 +1,8 @@
 package com.fateindestiny.android.sample.githubstars.data
 
 import android.util.Log
-import com.fateindestiny.android.sample.githubstars.GitHubConstants
+import com.fateindestiny.android.sample.githubstars.presenter.GitHubConstants
 import com.fateindestiny.android.sample.githubstars.data.local.DBHelper
-import com.fateindestiny.android.sample.githubstars.data.local.DBInfo
 import com.fateindestiny.android.sample.githubstars.data.remote.APIManager
 import com.fateindestiny.android.sample.githubstars.data.remote.SearchResultDTO
 import retrofit2.Call
@@ -15,9 +14,11 @@ class Model(private val presenter: GitHubConstants.Presenter) {
     private val dbHelper = DBHelper
 
 
+    fun searchUserByLocal(userName: String) {
+        presenter.searchResult(dbHelper.selectFavoritUser(userName))
+    }
 
-    fun serchUser(userName: String) {
-
+    fun searchUserByAPI(userName: String) {
         cache = APIManager.service().searchUsers(userName).apply {
             enqueue(object : Callback<SearchResultDTO> {
                 override fun onFailure(call: Call<SearchResultDTO>, t: Throwable) {
@@ -28,17 +29,28 @@ class Model(private val presenter: GitHubConstants.Presenter) {
                     call: Call<SearchResultDTO>,
                     response: Response<SearchResultDTO>
                 ) {
-                    response.body()?.let { presenter.searchResult(it.items) }
+                    response.body()?.let { it ->
+                        presenter.searchResult(it.items.apply {
+                            // 즐겨찾기 여부를 DB에서 조회하여 플래그값 처리.
+                            this.forEach {
+                                it.isFavorit = isFavoritUser(it)
+                            }
+                        })
+                    }
                 }
             })
         }
     }
 
     fun addFavoritUser(user: UserVO) {
-        dbHelper.insertFavoritUser(user, DBInfo.TBL_FAVORIT_USER.NAME)
+        dbHelper.insertFavoritUser(user)
     }
 
-    fun removeFavoritUser(user:UserVO) {
+    fun removeFavoritUser(user: UserVO) {
 
     }
+
+    fun isFavoritUser(user: UserVO): Boolean =
+        dbHelper.hasFavoritUser(user.login)
+
 } // end of class Model

@@ -1,4 +1,4 @@
-package com.fateindestiny.android.sample.githubstars
+package com.fateindestiny.android.sample.githubstars.presenter
 
 import com.fateindestiny.android.sample.githubstars.data.Model
 import com.fateindestiny.android.sample.githubstars.data.UserVO
@@ -6,6 +6,13 @@ import com.fateindestiny.android.sample.githubstars.data.UserVO
 class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Presenter {
 
     private val model: Model by lazy { Model(this) }
+    private var currentMode = Mode.API
+
+    override fun getCurrentMode(): Mode = currentMode
+
+    override fun changeMode(mode: Mode) {
+        currentMode = mode
+    }
 
     /**
      * View 에서 호출된 유저 검색 함수.
@@ -13,8 +20,16 @@ class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Pr
      * @param userName 검색할 사용자 이름.
      */
     override fun searchUser(userName: String) {
-        if(userName.isNotEmpty()) {
-            model.serchUser(userName)
+        when (currentMode) {
+            Mode.API -> {
+                // API 모드는 검색어가 없다면 굳이 호출하지 않아도 됨.
+                if (userName.isNotEmpty()) {
+                    model.searchUserByAPI(userName)
+                }
+            }
+            Mode.LOCAL -> {
+                model.searchUserByLocal(userName)
+            }
         }
     }
 
