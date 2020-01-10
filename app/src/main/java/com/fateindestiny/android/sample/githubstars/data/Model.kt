@@ -43,11 +43,17 @@ class Model(private val presenter: GitHubConstants.Presenter) {
     }
 
     fun addFavoritUser(user: UserVO) {
-        dbHelper.insertFavoritUser(user)
+        if (dbHelper.insertFavoritUser(user) > 0) {
+            user.isFavorit = true
+            presenter.updateUserList(user)
+        }
     }
 
     fun removeFavoritUser(user: UserVO) {
-
+        if (dbHelper.deleteFavoritUser(user) > 0) {
+            user.isFavorit = false
+            presenter.updateUserList(user)
+        }
     }
 
     fun isFavoritUser(user: UserVO): Boolean =

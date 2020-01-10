@@ -51,24 +51,28 @@ object DBHelper : TagDBFactory() {
         return result
     }
 
-    fun insertFavoritUser(user: UserVO) {
+    fun insertFavoritUser(user: UserVO): Long {
+        var result = 0L
         try {
-            db.insert(DBInfo.TBL_FAVORIT_USER.NAME, null, user.getContentValues())
+            result = db.insert(DBInfo.TBL_FAVORIT_USER.NAME, null, user.getContentValues())
         } catch (e: SQLException) {
             e.printStackTrace()
         }
+        return result
     }
 
-    fun deleteFaoritUser(user: UserVO) {
+    fun deleteFavoritUser(user: UserVO): Int {
+        var result = 0
         try {
-            db.delete(
+            result = db.delete(
                 DBInfo.TBL_FAVORIT_USER.NAME,
-                "${DBInfo.TBL_FAVORIT_USER.LOGIN}=${user.login}",
+                "${DBInfo.TBL_FAVORIT_USER.LOGIN}=\"${user.login}\"",
                 null
             )
         } catch (e: SQLException) {
             e.printStackTrace()
         }
+        return result
     }
 
     private fun getStringByColumnName(cursor: Cursor, name: String): String =

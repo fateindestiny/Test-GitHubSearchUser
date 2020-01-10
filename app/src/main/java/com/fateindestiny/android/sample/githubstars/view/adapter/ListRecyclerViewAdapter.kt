@@ -16,7 +16,7 @@ import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer
 import kotlinx.android.synthetic.main.item_user_list.view.*
 
-class ListRecyclerViewAdapter(res: Resources, var userList: List<UserVO>) :
+class ListRecyclerViewAdapter(res: Resources, var userList: ArrayList<UserVO>) :
     RecyclerView.Adapter<ListRecyclerViewAdapter.ViewHolder>(),
     CompoundButton.OnCheckedChangeListener {
 
@@ -60,6 +60,19 @@ class ListRecyclerViewAdapter(res: Resources, var userList: List<UserVO>) :
         if (user is UserVO) {
             favoritListener?.OnFavoritChanged(user, isChecked)
         }
+    }
+
+    fun updateUserItem(user: UserVO) {
+        val idx = userList.indexOf(user)
+        if (idx > -1) {
+            userList[idx].isFavorit = user.isFavorit
+        }
+        notifyDataSetChanged()
+    }
+
+    fun removeUserItem(user: UserVO) {
+        userList.remove(user)
+        notifyDataSetChanged()
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

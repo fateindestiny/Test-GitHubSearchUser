@@ -3,7 +3,6 @@ package com.fateindestiny.android.sample.githubstars
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
@@ -81,7 +80,6 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
             }
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                Log.d("FID", "test :: ${tab?.text}")
                 when (tab?.text) {
                     getString(R.string.api) -> {
                         // API 탭이 선택되었을 경우.
@@ -113,7 +111,7 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
         }
     }
 
-    override fun showUserList(list: List<UserVO>) {
+    override fun showUserList(list: ArrayList<UserVO>) {
         currentUserList.adapter = userListAdapter?.apply {
             this.userList = list
         } ?: ListRecyclerViewAdapter(resources, list).apply {
@@ -121,9 +119,35 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
         }
     }
 
+    /**
+     * User 목록 View의 데이터 중 파라메터 데이터와 일치하는 것에 정보를 갱신하는 함수.
+     *
+     * @param user
+     */
+    override fun updateUserList(user: UserVO) {
+        var adapter = rvUserList1.adapter
+
+        if (adapter is ListRecyclerViewAdapter) {
+            adapter.updateUserItem(user)
+        }
+        adapter = rvUserList2.adapter
+        if (adapter is ListRecyclerViewAdapter) {
+            adapter.updateUserItem(user)
+            // Local은 해당 즐겨찾기 해제시 목록에서 삭제되어야 하기에 사용자 즐겨찾기 여부에 따라 분기처리.
+            if (!user.isFavorit) {
+                adapter.removeUserItem(user)
+            } else {
+                adapter.updateUserItem(user)
+            }
+
+        }
+    }
+
     override fun OnFavoritChanged(user: UserVO, isFavorit: Boolean) {
         if (isFavorit) {
             presenter.addFavoritUser(user)
+        } else {
+            presenter.removeFavoritUser(user)
         }
     }
 } // end of class MainActivity

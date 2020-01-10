@@ -38,7 +38,7 @@ class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Pr
      *
      * @param list GitHub 유저 데이터 [UserVO] 리스트.
      */
-    override fun searchResult(list: List<UserVO>) {
+    override fun searchResult(list: ArrayList<UserVO>) {
         view.showUserList(list)
     }
 
@@ -58,5 +58,14 @@ class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Pr
      */
     override fun removeFavoritUser(user: UserVO) {
         model.removeFavoritUser(user)
+    }
+
+    /**
+     * 사용자 목록 아이템 상태를 갱신하는 함수.
+     *
+     * @param user 갱신할 사용자 데이터 [UserVO]
+     */
+    override fun updateUserList(user: UserVO) {
+        view.updateUserList(user)
     }
 } // end of class MainPresenter

@@ -9,7 +9,14 @@ interface GitHubConstants {
          *
          * @param list 유저 목록 [UserVO]
          */
-        fun showUserList(list:List<UserVO>)
+        fun showUserList(list:ArrayList<UserVO>)
+
+        /**
+         * User 목록 View의 데이터 중 파라메터 데이터와 일치하는 것에 정보를 갱신하는 함수.
+         *
+         * @param user
+         */
+        fun updateUserList(user:UserVO)
     } // end of interface View
 
     interface Presenter {
@@ -54,7 +61,7 @@ interface GitHubConstants {
          *
          * @param list 검색 결과 [UserVO] 리스트.
          */
-        fun searchResult(list:List<UserVO>)
+        fun searchResult(list:ArrayList<UserVO>)
 
         /**
          * 유저 즐겨찾기 추가 함수.
@@ -69,5 +76,12 @@ interface GitHubConstants {
          * @param user 유저 정보 [UserVO]
          */
         fun removeFavoritUser(user:UserVO)
+
+        /**
+         * 사용자 목록 아이템 상태를 갱신하는 함수.
+         *
+         * @param user 갱신할 사용자 데이터 [UserVO]
+         */
+        fun updateUserList(user:UserVO)
     } // end of interface Presenter
 } // end of interface GitHubConstants
