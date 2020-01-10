@@ -1,7 +1,5 @@
 package com.fateindestiny.android.sample.githubstars.presenter
 
-import android.os.Handler
-import android.os.HandlerThread
 import com.fateindestiny.android.sample.githubstars.data.Model
 import com.fateindestiny.android.sample.githubstars.data.UserVO
 

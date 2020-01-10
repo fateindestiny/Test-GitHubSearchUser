@@ -17,7 +17,7 @@ object DBHelper : TagDBFactory() {
             val cursor = db.query(
                 DBInfo.TBL_FAVORIT_USER.NAME, null,
                 // userName이 없으면 모든 조건 없이, userName이 있으면 해당 이름 값으로 조회.
-                if (userName.isEmpty()) null else "${DBInfo.TBL_FAVORIT_USER.LOGIN} like %$userName%",
+                if (userName.isEmpty()) null else "${DBInfo.TBL_FAVORIT_USER.LOGIN} like \"%$userName%\"",
                 null, null, null, "${DBInfo.TBL_FAVORIT_USER.LOGIN} ASC"
             )
             if (cursor.moveToFirst()) {

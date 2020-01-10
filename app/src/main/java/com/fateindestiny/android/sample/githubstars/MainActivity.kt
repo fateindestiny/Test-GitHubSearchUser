@@ -150,6 +150,9 @@ class MainActivity : AppCompatActivity(), GitHubConstants.View,
             }
         } else if (adapter is ListRecyclerViewAdapter) {
             adapter.userList = list
+            uiHandler.post{
+                currentUserList.adapter?.notifyDataSetChanged()
+            }
         }
     }
 
