@@ -5,11 +5,29 @@ import com.fateindestiny.android.sample.githubstars.data.UserVO
 
 class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Presenter {
 
+    /**
+     * 데이터를 요청하기 위한 [Model] 객체.
+     */
     private val model: Model by lazy { Model(this) }
+
+    /**
+     * 모드를 저장할 Field.
+     * 기본 값은 [Mode.API]
+     */
     private var currentMode = Mode.API
 
+    /**
+     * 현재 [Mode]를 조회하는 함수.
+     *
+     * @return 현재 [Mode] 값.
+     */
     override fun getCurrentMode(): Mode = currentMode
 
+    /**
+     * API, Local 모드를 변경하는 함수.
+     *
+     * @param mode 변경할 [Mode].
+     */
     override fun changeMode(mode: Mode) {
         currentMode = mode
     }
@@ -33,6 +51,9 @@ class MainPresenter(private val view: GitHubConstants.View) : GitHubConstants.Pr
         }
     }
 
+    /**
+     * View에서 요청하는 추가 사용자 정보 조회 함수.
+     */
     override fun searchMore() {
         model.searchMoreByAPI()
     }

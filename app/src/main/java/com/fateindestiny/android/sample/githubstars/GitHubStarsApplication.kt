@@ -8,8 +8,10 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 class GitHubStarsApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        // DB 라이브러리 초기화
         DBHelper.initialize(this)
 
+        // 이미지 로더 설정 초기화
         ImageLoader.getInstance().init(
             ImageLoaderConfiguration.Builder(this)
                 .denyCacheImageMultipleSizesInMemory()

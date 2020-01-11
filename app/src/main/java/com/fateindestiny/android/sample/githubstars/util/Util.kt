@@ -3,7 +3,7 @@ package com.fateindestiny.android.sample.githubstars.util
 class Util private constructor() {
 
     companion object {
-        val initChars = listOf(
+        private val initChars = listOf(
             'ㄱ',
             'ㄲ',
             'ㄴ',
@@ -25,6 +25,12 @@ class Util private constructor() {
             'ㅎ'
         )
 
+        /**
+         * 초성을 조회하는 함수.
+         *
+         * @param str 조회할 [String]
+         * @return 조회된 초성 [String]
+         */
         fun getInitialChar(str: String): String = if (str.isNotEmpty()) {
             val char = str[0]
             if (char >= (0xAC00).toChar()) {
@@ -42,4 +48,4 @@ class Util private constructor() {
         }
 
     }
-}
+} // end of class Util

@@ -2,6 +2,12 @@ package com.fateindestiny.android.sample.githubstars.presenter
 
 import com.fateindestiny.android.sample.githubstars.data.UserVO
 
+/**
+ * MVP 패턴인 View와 Presenter가 사용할 기능을 정의한 Interface.
+ *
+ * @author Ki-man, Kim
+ * @since 2020-01-11
+ */
 interface GitHubConstants {
     interface View {
         /**
